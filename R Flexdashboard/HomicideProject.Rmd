@@ -1,0 +1,44 @@
+---
+title: "Homicide Analysis"
+author: "Audrey M Crockett"
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(flexdashboard)
+library(tidyverse)
+
+
+read_combine_multiple_csv <- function(path, pattern = "*.csv") {
+    files = list.files(path, pattern, full.names = TRUE)
+    lapply(files, read_csv) %>% 
+      lapply(function(x) filter(x, DATE > '1964-12-30')) %>%
+      reduce(inner_join, by = "DATE")
+}
+```
+
+# Crime
+```{r, echo = F, message=FALSE}
+
+homicide = read_csv('../Data/UCR65_18.csv') %>%
+  mutate(Unsolved = MRD - CLR)
+
+state_population = read_combine_multiple_csv("../Data/StatePopulations")
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
